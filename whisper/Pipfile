@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "==0.115.12"
+uvicorn = "==0.34.3"
+openai-whisper = "==20240930"
+python-multipart = "==0.0.20"
+torch = "==2.7.1"
+
+[dev-packages]
+pytest = "==8.4.0"
+pytest-asyncio = "==1.0.0"
+ruff = "==0.11.13"
+pre-commit = "==4.2.0"
+coverage = "==7.8.2"
+
+[requires]
+python_version = "3.12"
