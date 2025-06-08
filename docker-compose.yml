@@ -1,0 +1,59 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./docker/dev.Dockerfile
+    volumes:
+      - ./backend:/app
+      - ./data:/data
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      WHISPER_SERVICE_URL: http://whisper_service:8001
+      LOG_LEVEL: DEBUG
+    ports:
+      - "8000:8000"
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  whisper:
+    build:
+      context: ./whisper
+      dockerfile: ./docker/dev.Dockerfile
+    volumes:
+      - whisper_data:/app/models
+    ports:
+      - "8001:8001"
+    environment:
+      WHISPER_MODEL_NAME: base
+      WHISPER_MODEL_DIR: /app/models
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+volumes:
+  ollama_data:
+  whisper_data:

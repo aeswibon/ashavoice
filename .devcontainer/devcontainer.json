@@ -1,0 +1,32 @@
+{
+    "name": "AshaVoice Development",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "backend",
+    "workspaceFolder": "/workspaces/AshaVoice/backend",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-azuretools.vscode-docker",
+                "timonwong.shellcheck",
+                "charliermarsh.ruff"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.languageServer": "Pylance",
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": "explicit",
+                    "source.fixAll": "explicit"
+                },
+                "ruff.path": ["/usr/local/bin/ruff"]
+            }
+        }
+    },
+    "forwardPorts": [8000, 11434],
+    "postCreateCommand": "pip install pipenv && pipenv install --deploy --system && ollama pull llama3",
+    "remoteEnv": {
+        "OLLAMA_HOST": "0.0.0.0:11434"
+    }
+}

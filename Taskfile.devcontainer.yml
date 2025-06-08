@@ -1,0 +1,66 @@
+version: "3"
+silent: true
+
+tasks:
+  setup:
+    desc: "Initial project setup for DevContainer (runs dev container, pulls Ollama model)"
+    cmds:
+      - echo "Starting Dev Container (this might take a while on first run)..."
+      - COMPOSE_BAKE=true docker compose -f .devcontainer/docker-compose.yml up --build -d
+      - echo "Waiting for Ollama service to be ready..."
+      - docker compose -f .devcontainer/docker-compose.yml  exec ollama sh -c 'until ollama list; do echo "Waiting for Ollama server..."; sleep 1; done; echo "Ollama server is up!"'
+      - echo "Ensuring Ollama model (llama3) is pulled. This might take a while if not cached..."
+      - docker compose -f .devcontainer/docker-compose.yml exec ollama ollama pull llama3 || true
+
+  up:
+    desc: "Starts the Dev Container services in detached mode"
+    cmds:
+      - COMPOSE_BAKE=true docker compose -f .devcontainer/docker-compose.yml up -d
+      - echo "Waiting for Ollama service to be ready..."
+      - docker compose -f .devcontainer/docker-compose.yml exec ollama sh -c 'until curl --output /dev/null --silent --head --fail http://localhost:11434; do echo "Waiting for Ollama server..."; sleep 1; done; echo "Ollama server is up!"'
+
+  down:
+    desc: "Stops the Dev Container services"
+    cmds:
+      - docker compose -f .devcontainer/docker-compose.yml down
+
+  clean:
+    desc: "Cleans up Dev Container Docker volumes and images (DANGEROUS: deletes data!)"
+    cmds:
+      - echo "This will delete ALL Docker volumes and images related to the DevContainer!"
+      - docker compose -f .devcontainer/docker-compose.yml down -v --rmi all
+      - echo "Clean-up complete."
+
+  lint:
+    desc: "Runs Ruff linter and formatter on the backend code inside DevContainer"
+    cmds:
+      - echo "Running Ruff linting and formatting..."
+      - pipenv run ruff check --fix backend/app backend/pipeline.py || true
+      - pipenv run ruff format backend/app backend/pipeline.py || true
+      - echo "Ruff finished."
+
+  test-python:
+    desc: "Runs Python unit tests inside DevContainer"
+    cmds:
+      - echo "Running Python tests..."
+      - pipenv run pytest backend/tests
+      - echo "Python tests finished."
+
+  install-deps:
+    desc: "Installs Python dependencies via pipenv inside DevContainer"
+    cmds:
+      - echo "Installing/updating pipenv dependencies..."
+      - pipenv install --deploy --system
+      - echo "Dependencies installed."
+
+  update-deps:
+    desc: "Updates Pipfile.lock based on Pipfile inside DevContainer"
+    cmds:
+      - echo "Updating Pipfile.lock..."
+      - pipenv lock --clear --keep-outdated
+      - echo "Pipfile.lock updated."
+
+  shell:
+    desc: "Opens a new shell inside the pipenv environment in DevContainer"
+    cmds:
+      - pipenv shell

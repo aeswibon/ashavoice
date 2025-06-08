@@ -1,0 +1,59 @@
+version: "3"
+silent: true
+includes:
+  dev: Taskfile.devcontainer.yml
+  app:
+    taskfile: ./backend/Taskfile.yml
+    dir: ./backend
+  whisper:
+    taskfile: ./whisper/Taskfile.yml
+    dir: ./whisper
+
+tasks:
+  default:
+    desc: List available tasks
+    cmds:
+      - echo "Available tasks:"
+      - task --list
+
+  logs:
+    desc: "Shows logs for all the services"
+    cmds:
+      - docker compose -f docker-compose.yml logs -f
+
+  up:
+    desc: "Starts services for local testing (docker-compose.yml)"
+    cmds:
+      - echo "Starting local test services..."
+      - docker compose -f docker-compose.yml up --build -d
+      - echo "Waiting for Ollama service to be ready..."
+      - docker compose -f docker-compose.yml exec ollama sh -c 'until ollama list; do echo "Waiting for Ollama server..."; sleep 1; done; echo "Ollama server is up!"'
+      - echo "Ensuring Ollama model (llama3) is pulled. This might take a while if not cached..."
+      - docker compose -f docker-compose.yml exec ollama ollama pull llama3 || true
+
+  down:
+    desc: "Stops local test services"
+    cmds:
+      - docker compose -f docker-compose.yml down
+
+  exec:
+    desc: "Executes a command inside the backend test container (e.g., python ...)"
+    cmds:
+      - |
+        if [ -z "{{.CLI_ARGS}}" ]; then
+          echo "Usage: task exec -- <command_to_run_in_container>"
+          echo "Example: task exec -- python pipeline.py ../data/patient_intro.mp3"
+          exit 1
+        fi
+        docker compose -f docker-compose.yml exec backend {{.CLI_ARGS}}
+
+  run:
+    desc: "Runs the voice agent pipeline with a specified audio file using script"
+    cmds:
+      - |
+        if [ -z "{{.CLI_ARGS}}" ]; then
+          echo "Usage: task run -- <audio_file_path>"
+          echo "Example: task run -- data/patient_intro.mp3"
+          exit 1
+        fi
+        ./scripts/pipeline.sh {{.CLI_ARGS}}

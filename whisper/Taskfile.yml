@@ -1,0 +1,48 @@
+version: "3"
+silent: true
+
+tasks:
+  default:
+    desc: "List available tasks"
+    cmds:
+      - echo "Available tasks:"
+      - task --list
+
+  pre-commit-install:
+    desc: "Installs pre-commit hooks locally (requires pre-commit installed on host)"
+    cmds:
+      - pre-commit install
+
+  pre-commit-run:
+    desc: "Runs pre-commit hooks on the current directory"
+    cmds:
+      - pre-commit run --all-files
+
+  pre-commit-update:
+    desc: "Updates pre-commit hooks"
+    cmds:
+      - pre-commit autoupdate
+
+  lint:
+    desc: "Runs Ruff linter and formatter on the backend code"
+    cmds:
+      - echo "Running Ruff linting and formatting..."
+      - pipenv run ruff check --fix
+      - pipenv run ruff format
+      - echo "Ruff finished."
+
+  test:
+    desc: "Runs Python unit tests for the backend application"
+    cmds:
+      - echo "Running Python tests..."
+      - pipenv run pytest
+      - echo "Python tests finished."
+
+  coverage:
+    desc: "Runs Python unit tests with coverage and generates reports"
+    cmds:
+      - echo "Running Python tests with coverage..."
+      - pipenv run coverage run -m pytest backend
+      - pipenv run coverage report -m
+      - pipenv run coverage html -d coverage_html_report
+      - echo "Coverage report generated. Check backend/coverage_html_report/index.html"
