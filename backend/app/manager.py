@@ -121,3 +121,6 @@ class Manager:
         self._llm_service = None
         self._voice_processor_service = None
         self._log(logging.INFO, "All resources cleaned up successfully.")
+
+
+manager = Manager()

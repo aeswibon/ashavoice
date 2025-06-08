@@ -8,3 +8,5 @@ venv/
 data/
 models/checkpoints/
 backend/.ruff_cache
+backend/output
+backend/app.log

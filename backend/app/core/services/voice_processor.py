@@ -64,10 +64,6 @@ class VoiceProcessorService:
         """
         self._log(logging.INFO, f"Starting full pipeline for: {audio_file_path_str}")
 
-        # Ensure output directory exists
-        settings.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        self._log(logging.INFO, f"Output directory ensured: {settings.OUTPUT_DIR}")
-
         try:
             audio_file_path = await self.validate_audio_file(Path(audio_file_path_str))
             self._log(logging.INFO, f"Validated audio file: {audio_file_path}")
@@ -147,10 +143,15 @@ class VoiceProcessorService:
         Saves the pipeline results to the output directory.
         """
         try:
+            output_base_path = Path(settings.OUTPUT_DIR)
+            output_base_path.mkdir(parents=True, exist_ok=True)
+
             base_name = audio_file_path.stem
-            summary_output_path = settings.OUTPUT_DIR / f"{base_name}_summary.json"
-            soap_output_path = settings.OUTPUT_DIR / f"{base_name}_soap.json"
-            transcript_output_path = settings.OUTPUT_DIR / f"{base_name}_transcript.txt"
+            summary_output_path = output_base_path.joinpath(f"{base_name}_summary.json")
+            soap_output_path = output_base_path.joinpath(f"{base_name}_soap.json")
+            transcript_output_path = output_base_path.joinpath(
+                f"{base_name}_transcript.txt"
+            )
 
             with summary_output_path.open("w", encoding="utf-8") as f:
                 f.write(summary.model_dump_json(indent=2))

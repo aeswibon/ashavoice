@@ -2,6 +2,7 @@ import asyncio
 from http import HTTPStatus
 from pathlib import Path
 
+import aiofiles
 import httpx
 
 from app.utils.config import settings
@@ -48,10 +49,14 @@ class WhisperClient:
                     f"Whisper transcription attempt {attempt + 1}/{self.max_retries} for {audio_file_path.name}"
                 )
 
-                async with audio_file_path.open("rb") as f:
-                    files = {"audio_file": (audio_file_path.name, f, "audio/mpeg")}
-                    response = await self.client.post(transcribe_url, files=files)
-                    response.raise_for_status()
+                async with aiofiles.open(audio_file_path, mode="rb") as f:
+                    file_content = await f.read()
+
+                files = {
+                    "audio_file": (audio_file_path.name, file_content, "audio/mpeg")
+                }
+                response = await self.client.post(transcribe_url, files=files)
+                response.raise_for_status()
 
                 result = response.json()
                 transcript = result.get("transcript")

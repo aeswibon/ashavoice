@@ -7,8 +7,8 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel
 
-from app import manager
 from app.core.services import LLMService, STTService, VoiceProcessorService
+from app.manager import manager
 from app.utils.config import settings
 from app.utils.logging import logger
 

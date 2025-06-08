@@ -6,11 +6,11 @@ class SymptomSummary(BaseModel):
     Represents a structured summary of patient symptoms extracted from a transcript.
     """
 
-    chief_complaint: str = Field(
-        ..., description="The main reason for the patient's visit."
+    chief_complaint: str | None = Field(
+        None, description="The main reason for the patient's visit."
     )
-    history_of_present_illness: str = Field(
-        ...,
+    history_of_present_illness: str | None = Field(
+        None,
         description="Detailed description of the chief complaint, including onset, duration, character, severity, location, aggravating/alleviating factors, and associated symptoms.",
     )
     relevant_past_medical_history: str | None = Field(
@@ -30,4 +30,11 @@ class SymptomSummary(BaseModel):
     patient_needs_expectations: str | None = Field(
         None,
         description="Any explicit needs or expectations stated by the patient regarding the visit.",
+    )
+    symptoms: list[dict[str, str]] = Field(
+        default_factory=list,
+        description="List of identified symptoms with details.",
+    )
+    summary_narrative: str = Field(
+        ..., description="A concise overall narrative summary of the conversation."
     )

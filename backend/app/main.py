@@ -9,12 +9,9 @@ from app.api.v1.routes import router as v1_router
 from app.core.clients.llm import OllamaClient
 from app.core.clients.stt import WhisperClient
 from app.core.services import LLMService, STTService, VoiceProcessorService
-from app.manager import Manager
+from app.manager import manager
 from app.utils.config import settings
 from app.utils.logging import logger
-
-# Global instances of clients and services
-manager = Manager()
 
 
 @asynccontextmanager

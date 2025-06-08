@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
     # --- Core Application Settings ---
     APP_NAME: str = "AshaVoice Backend"
-    LOG_LEVEL: str = Field("INFO", env="LOG_LEVEL")
+    LOG_LEVEL: str = Field("DEBUG", env="LOG_LEVEL")
     LOG_FILE_NAME: str = Field("app.log", env="LOG_FILE_NAME")
 
     # --- Directory Settings ---

@@ -14,6 +14,7 @@ ollama = "==0.5.1"
 httpx = "==0.28.1"
 requests = "==2.32.3"
 python-multipart = "==0.0.20"
+aiofiles = "*"
 
 [dev-packages]
 pytest = "==8.4.0"
